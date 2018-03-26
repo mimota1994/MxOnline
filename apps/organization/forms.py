@@ -4,7 +4,7 @@ __date__ = '2018-03-24 20:33'
 from django import  forms
 
 from operation.models import UserAsk
-#test test test
+
 
 class AnotherUserForm(forms.ModelForm):
     class Meta:
