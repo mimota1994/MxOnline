@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from django.views.generic.base import View
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from django.http import HttpResponse
 
 
 from .models import CourseOrg,CityDict
@@ -58,16 +59,23 @@ class OrgView(View):
             "hot_orgs":hot_orgs,
             "sort":sort,
         })
+
+
+
+class AddUserAskView(View):
     def post(self,request):
         userask_form=UserAskForm(request.POST)
         if userask_form.is_valid():
-            name=request.POST.get("name","")
-            phone=request.POST.get("phone","")
-            course_name=request.POST.get("course_name","")
-
-            user_ask = UserAsk()
-            user_ask.name = name
-            user_ask.phone=phone
-            user_ask.course_name=course_name
-            user_ask.save()
-
+            userask=userask_form.save(commit=True)
+            # name=request.POST.get("name","")
+            # phone=request.POST.get("phone","")
+            # course_name=request.POST.get("course_name","")
+            #
+            # user_ask = UserAsk()
+            # user_ask.name = name
+            # user_ask.phone=phone
+            # user_ask.course_name=course_name
+            # user_ask.save()
+            return HttpResponse('{"status":"success"}',content_type='application/json')
+        else:
+            return HttpResponse('{"status":"fail","msg":"添加出错"}',content_type='application/json')

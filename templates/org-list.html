@@ -5,7 +5,7 @@
 <section>
         <div class="wp">
             <ul  class="crumbs">
-                <li><a href="index.html">首页</a>></li>
+                <li><a href={% url 'index' %}>首页</a>></li>
                 <li>课程机构</li>
             </ul>
         </div>
@@ -117,29 +117,25 @@
 		</div>
 	</div>
 	<div class="right companyright">
-        <form id="user_ask_form" method="post" action='' >
-			<div class="head">我要学习</div>
-			<form class="rightform" id="jsStayForm">
-				<div>
-                    <img src="/static/images/rightform1.png"/>
-                    <input type="text" name="name" id="companyName" placeholder="名字" maxlength="25" />
-                </div>
-				<div>
-                    <img src="/static/images/rightform2.png"/>
-                    <input type="text" name="phone" id="companyMobile" placeholder="联系电话"/>
-                </div>
-				<div>
-                    <img src="/static/images/rightform3.png"/>
-                    <input type="text" name="course_name" id="companyAddress" placeholder="课程名" maxlength="50" />
-                </div>
-                <p class="error company-tips" id="jsCompanyTips"></p>
-				    <input class="btn" type="submit" id="jsStayBtn" value="立即咨询 >" />
-                    <input type='hidden' name='csrfmiddlewaretoken' value='5I2SlleZJOMUX9QbwYLUIAOshdrdpRcy' />
-            </form>
-            {% csrf_token %}
+        <div class="head">我要学习</div>
+        <form class="rightform" id="jsStayForm">
+            <div>
+                <img src="/static/images/rightform1.png"/>
+                <input type="text" name="name" id="companyName" placeholder="名字" maxlength="25" />
+            </div>
+            <div>
+                <img src="/static/images/rightform2.png"/>
+                <input type="text" name="mobile" id="companyMobile" placeholder="联系电话"/>
+            </div>
+            <div>
+                <img src="/static/images/rightform3.png"/>
+                <input type="text" name="course_name" id="companyAddress" placeholder="课程名" maxlength="50" />
+            </div>
+            <p class="error company-tips" id="jsCompanyTips"></p>
+                <input class="btn" type="submit" id="jsStayBtn" value="立即咨询 >" />
+        {% csrf_token %}
         </form>
-
-         </div>
+    </div>
 
 		<div class="right companyrank layout">
 			<div class="head">授课机构排名</div>
@@ -158,4 +154,31 @@
 		</div>
         </div>
 </section>
+{% endblock %}
+
+{% block custom_js %}
+<script>
+    $(function(){
+        $('#jsStayBtn').on('click',function(){
+            $.ajax({
+                cache:false,
+                type:"POST",
+                url:"{% url "org:add_ask" %}",
+                data:$('#jsStayForm').serialize(),
+                asyn:true,
+                success:function (data) {
+                    console.log(data)
+                    alert(data)
+                    if(data.status=='success'){
+                        $('#jsStayForm')[0].reset();
+                        alert("提交成功")
+                    }else if(data.status=='fail'){
+                        $('#jsCompanyTips').html(data.msg)
+                    }
+                }
+            })
+        })
+        }
+    )
+</script>
 {% endblock %}
