@@ -3,11 +3,14 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from django.db import models
+from organization.models import CourseOrg,Teacher
 
 # Create your models here.
 
 
 class Course(models.Model):
+    course_teacher=models.ForeignKey(Teacher,verbose_name=u"教师",null=True,blank=True)
+    course_org=models.ForeignKey(CourseOrg,verbose_name=u"课程机构",null=True,blank=True)
     name=models.CharField(max_length=50,verbose_name=u"课程名")
     des=models.CharField(max_length=200,verbose_name=u"课程描述")
     degree=models.CharField(choices=(("gj",u"高级"),("zj",u"中级"),("cj",u"初级")),max_length=2)

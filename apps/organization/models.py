@@ -52,12 +52,15 @@ class Teacher(models.Model):
     click_nums=models.IntegerField(default=0,verbose_name=u"点击数")
     fav_nums=models.IntegerField(default=0,verbose_name=u"收藏数")
 #     course_nums=models.IntegerField(max_length=5,default=0,verbose_name=u"课程数")
-#     image=models.ImageField(upload_to="organization/teacher/%Y/%m",verbose_name=u"头像",max_length=100)
+    image=models.ImageField(upload_to="teacher/%Y/%m",verbose_name=u"头像",max_length=100,null=True,blank=True)
     add_time=models.DateTimeField(default=datetime.now,verbose_name=u"添加时间")
 
     class Meta:
         verbose_name=u"教师"
         verbose_name_plural=verbose_name
+
+    def __unicode__(self):
+        return self.name
 
 
 # class course(models.Model):
