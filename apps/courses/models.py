@@ -9,6 +9,7 @@ from organization.models import CourseOrg,Teacher
 
 
 class Course(models.Model):
+
     course_teacher=models.ForeignKey(Teacher,verbose_name=u"教师",null=True,blank=True)
     course_org=models.ForeignKey(CourseOrg,verbose_name=u"课程机构",null=True,blank=True)
     name=models.CharField(max_length=50,verbose_name=u"课程名")

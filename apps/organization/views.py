@@ -48,7 +48,7 @@ class OrgView(View):
 
         # Provide Paginator with the request object for complete querystring generation
 
-        p = Paginator(all_orgs,2, request=request)
+        p = Paginator(all_orgs,3, request=request)
 
         orgs = p.page(page)
         return render(request,"org-list.html",{
@@ -90,7 +90,10 @@ class OrgHomeView(View):
         course_org=CourseOrg.objects.get(id=int(org_id))
         all_courses=course_org.course_set.all()[0:3]
         all_teachers=course_org.teacher_set.all()[0:1]
-        teacher_courses=all_teachers[0].course_set.all()[0:1]
+        if all_teachers:
+            teacher_courses=all_teachers[0].course_set.all()[0:1]
+        else:
+            teacher_courses=[]
         statue="home"
         return render(request,"org-detail-homepage.html",{
             "all_courses":all_courses,
@@ -134,6 +137,21 @@ class OrgDescView(View):
         course_org=CourseOrg.objects.get(id=int(org_id))
         statue="describe"
         return render(request,"org-detail-desc.html",{
+            "course_org":course_org,
+            "statue":statue
+        })
+
+
+class OrgTeacherView(View):
+    """
+    机构教师
+    """
+    def get(self,request,org_id):
+        course_org=CourseOrg.objects.get(id=int(org_id))
+        all_teachers=course_org.teacher_set.all()
+        statue="teachers"
+        return render(request,"org-detail-teachers.html",{
+            "all_teachers":all_teachers,
             "course_org":course_org,
             "statue":statue
         })

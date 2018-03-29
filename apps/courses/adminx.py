@@ -7,7 +7,7 @@ import xadmin
 from .models import Course,Lesson,Video,CourseResource
 
 class CourseAdmin(object):
-    list_display=['name','des','degree','students','learn_times','detail','fav_nums','image','click_nums','add_time']
+    list_display=['name','des','degree','students','learn_times','fav_nums','image','click_nums','add_time']
     searh_fields=['name','des','degree','students','learn_times','detail','fav_nums','image','click_nums']
     list_filter=['name','des','degree','students','learn_times','detail','fav_nums','image','click_nums','add_time']
 
