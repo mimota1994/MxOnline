@@ -91,9 +91,49 @@ class OrgHomeView(View):
         all_courses=course_org.course_set.all()[0:3]
         all_teachers=course_org.teacher_set.all()[0:1]
         teacher_courses=all_teachers[0].course_set.all()[0:1]
+        statue="home"
         return render(request,"org-detail-homepage.html",{
             "all_courses":all_courses,
             "all_teachers":all_teachers,
             "teacher_courses":teacher_courses,
             "course_org":course_org,
+            "statue":statue
+        })
+
+class OrgCourseView(View):
+    """
+    机构课程
+    """
+    def get(self,request,org_id):
+        course_org=CourseOrg.objects.get(id=org_id)
+        all_courses=course_org.course_set.all()
+        statue = "course"
+        # 对机构所有课程进行分页
+        # try:
+        #     page = request.GET.get('page', 1)
+        # except PageNotAnInteger:
+        #     page = 1
+        #
+        # # Provide Paginator with the request object for complete querystring generation
+        #
+        # p = Paginator(org_all_courses, 4, request=request)
+        #
+        # courses = p.page(page)
+        return render(request, "org-detail-course.html", {
+            "all_courses": all_courses,
+            "course_org":course_org,
+            "statue": statue
+        })
+
+
+class OrgDescView(View):
+    """
+    机构介绍
+    """
+    def get(self,request,org_id):
+        course_org=CourseOrg.objects.get(id=int(org_id))
+        statue="descibe"
+        return render(request,"org-detail-desc.html",{
+            "course_org":course_org,
+            "statue":statue
         })
