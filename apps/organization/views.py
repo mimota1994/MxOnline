@@ -132,7 +132,7 @@ class OrgDescView(View):
     """
     def get(self,request,org_id):
         course_org=CourseOrg.objects.get(id=int(org_id))
-        statue="descibe"
+        statue="describe"
         return render(request,"org-detail-desc.html",{
             "course_org":course_org,
             "statue":statue
