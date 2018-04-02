@@ -59,6 +59,7 @@ class OrgView(View):
             "category": category,
             "hot_orgs": hot_orgs,
             "sort": sort,
+            "sa":"org",
         })
 
 
