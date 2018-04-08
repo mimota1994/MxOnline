@@ -93,11 +93,11 @@ class OrgHomeView(View):
 
         #显示是否收藏
         has_fav = False
+        msg = "收藏"
         if request.user.is_authenticated():
             if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id,fav_type=2):
                 msg="已收藏"
-            else:
-                msg="收藏"
+
 
         all_courses = course_org.course_set.all()[0:3]
         all_teachers = course_org.teacher_set.all()[0:1]
