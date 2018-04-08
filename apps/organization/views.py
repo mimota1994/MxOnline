@@ -126,11 +126,11 @@ class OrgCourseView(View):
 
         # 显示是否收藏
         has_fav = False
+        msg = "收藏"
         if request.user.is_authenticated():
             if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
                 msg = "已收藏"
-            else:
-                msg = "收藏"
+
 
         all_courses = course_org.course_set.all()
         statue = "course"
@@ -163,11 +163,12 @@ class OrgDescView(View):
 
         # 显示是否收藏
         has_fav = False
+        msg = "收藏"
         if request.user.is_authenticated():
             if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
                 msg = "已收藏"
-            else:
-                msg = "收藏"
+
+
 
         statue = "describe"
         return render(request, "org-detail-desc.html", {
@@ -187,11 +188,11 @@ class OrgTeacherView(View):
 
         # 显示是否收藏
         has_fav = False
+        msg = "收藏"
         if request.user.is_authenticated():
             if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
                 msg = "已收藏"
-            else:
-                msg = "收藏"
+
 
         all_teachers = course_org.teacher_set.all()
         statue = "teachers"
