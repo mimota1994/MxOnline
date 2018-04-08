@@ -8,11 +8,11 @@ from .models import Course
 # Create your views here.
 class CourseView(View):
     def get(self,request):
-        all_courses=Course.objects.all()
+        all_courses=Course.objects.all().order_by("add_time")
         sort = request.GET.get('sort', "")
         if sort:
-            if sort == "fav_nums":
-                all_courses = all_courses.order_by("-fav_nums")
+            if sort == "hot":
+                all_courses = all_courses.order_by("-click_nums")
             elif sort == "students":
                 all_courses = all_courses.order_by("-students")
 
@@ -39,3 +39,13 @@ class CourseView(View):
             'hot_courses':hot_courses,
             'sort':sort
             })
+
+
+class CourseDetailView(View):
+    def get(self,request,course_id):
+        course=Course.objects.get(id=int(course_id))
+
+        return render(request,'course-detail.html',{
+            'course':course,
+            'course_id':course_id
+        })
