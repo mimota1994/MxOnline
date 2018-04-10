@@ -4,7 +4,7 @@ from django.views.generic.base import View
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 
-from .models import CourseOrg, CityDict
+from .models import CourseOrg, CityDict,Teacher
 from .forms import UserAskForm
 from operation.models import UserAsk, UserFavorite
 from courses.models import Course
@@ -268,3 +268,31 @@ class AddFavView(View):
             else:
                 return HttpResponse('{"status":"fail","msg":"收藏出错"}', content_type='application/json')
 
+
+
+class TeacherView(View):
+    def get(self,request):
+        all_teachers=Teacher.objects.all()
+        hot_teachers=Teacher.objects.order_by('click_nums')[:3]
+
+        #人气（点击数量）排序
+        sort=request.GET.get('sort','')
+
+        if sort=='hot':
+            all_teachers.order_by('click_nums')
+
+        #分页
+        try:
+            page=request.GET.get('page',1)
+        except PageNotAnInteger:
+            page=1
+
+        p=Paginator(all_teachers,4,request=request)
+        teachers=p.page(page)
+
+        return render(request,'teachers-list.html',{
+            'all_teachers':teachers,
+            'sa':'teacher',
+            'hot_teachers':hot_teachers,
+            'sort':sort
+        })
