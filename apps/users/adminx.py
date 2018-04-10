@@ -6,7 +6,7 @@ import xadmin
 from xadmin import views
 
 from .models import EmailVerifyRecord
-from .models import Banner
+from .models import Banner,UserProfile
 
 class BaseSetting(object):
     enable_themes=True
@@ -16,6 +16,14 @@ class GlobalSettings(object):
     site_title="慕学后台管理系统"
     site_footer="慕学在线网"
     menu_style="accordion"
+
+
+# class UserProfileAdmin(object):
+#     list_display=['username','email']
+#     search_fields=['username','email']
+#     list_filter=['username','email']
+#
+# xadmin.site.register(UserProfile,UserProfileAdmin)
 
 class EmailVerifyRecordAdmin(object):
     list_display=['code','email','send_type','send_time']
