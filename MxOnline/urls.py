@@ -48,4 +48,5 @@ urlpatterns = [
     #机构详情列表
     #url(r'^org/$',OrgDetailHomePageView.as_view(),name="org-detail-homepage")
 
+
 ]
