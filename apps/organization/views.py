@@ -220,6 +220,22 @@ class AddFavView(View):
         exist_records = UserFavorite.objects.filter(user=request.user, fav_id=int(fav_id), fav_type=int(fav_type))
         if exist_records:
             exist_records.delete()
+
+            # 更新收藏数
+            count = UserFavorite.objects.filter(fav_id=fav_id, fav_type=fav_type).count()
+            if fav_type == '1':
+                courses = Course.objects.filter(id=fav_id)
+                if courses:
+                    course = courses[0]
+                    course.fav_nums = count
+                    course.save()
+
+            if fav_type == '2':
+                orgs = CourseOrg.objects.filter(id=fav_id)
+                if orgs:
+                    org = orgs[0]
+                    org.fav_nums = count
+                    org.save()
             return HttpResponse('{"status":"success","msg":"收藏"}', content_type='application/json')
 
         else:
@@ -229,6 +245,25 @@ class AddFavView(View):
                 user_fav.fav_id = int(fav_id)
                 user_fav.fav_type = int(fav_type)
                 user_fav.save()
+
+                #更新收藏数
+                count=UserFavorite.objects.filter(fav_id=fav_id, fav_type=fav_type).count()
+                if fav_type=='1':
+                    courses=Course.objects.filter(id=fav_id)
+                    if courses:
+                        course=courses[0]
+                        course.fav_nums=count
+                        course.save()
+
+                if fav_type=='2':
+                    orgs=CourseOrg.objects.filter(id=fav_id)
+                    if orgs:
+                        org=orgs[0]
+                        org.fav_nums=count
+                        org.save()
+
+
+
                 return HttpResponse('{"status":"success","msg":"已收藏"}', content_type='application/json')
             else:
                 return HttpResponse('{"status":"fail","msg":"收藏出错"}', content_type='application/json')

@@ -43,7 +43,7 @@
 						</ul>
 						<div class="btns">
 							<div class="btn colectgroupbtn"  id="jsLeftBtn">
-                                  收藏
+                                  {{ course_msg }}
                             </div>
                                 <div class="buy btn"><a style="color: white" href="course-video.html">开始学习</a></div>
 						</div>
@@ -77,10 +77,8 @@
 					<a href="{% url 'org:org_home' course.course_org.id %}">
                         <h2 class="center" title="清华大学">{{ course.course_org.name }}</h2>
                     </a>
-                    <div class="btn fr collectionbtn  notlogin
-                        "data-favid="22" data-fav-type="1">
-
-                         {{ msg }}
+                    <div class="btn colectgroupbtn"  id="jsRightBtn">
+                        {{ org_msg }}
                     </div>
 					<div class="clear">
 						<ul>
@@ -123,24 +121,24 @@
 				</div>
 			</div>
 			<div class="right layout">
+                {% if related_courses %}
 				<div class="head">相关课程推荐</div>
                 <div class="group_recommend">
-
+                    {% for course in related_courses %}
                         <dl>
                             <dt>
-                                <a target="_blank" href="">
-                                    <img width="240" height="220" class="scrollLoading" src="../media/courses/2016/11/540e57300001d6d906000338-240-135_mvvGYHL.jpg"/>
+                                <a target="_blank" href="{% url 'course:course_detail' course.id %}">
+                                    <img width="240" height="220" class="scrollLoading" src="{{ MEDIA_URL }}{{ course.image }}"/>
                                 </a>
                             </dt>
                             <dd>
-                                <a target="_blank" href=""><h2> django实战项目</h2></a>
-                                <span class="fl">学习时长：<i class="key">0</i></span>
+                                <a target="_blank" href=""><h2> {{ course.name }}</h2></a>
+                                <span class="fl">学习时长：<i class="key">{{ course.learn_times }}</i></span>
                             </dd>
                         </dl>
-
-
-
+                    {% endfor %}
                 </div>
+                {% endif %}
 			</div>
 		</div>
 	</div>
@@ -176,45 +174,14 @@ function add_fav(current_elem, fav_id, fav_type){
     });
 }
 
-$('.collectionbtn').on('click', function(){
-    add_fav($(this), {{ course.course_org.id }}, 2);
-});
-
-$(function(){
-    var $precision = $('.precision'),
-        score = $precision.attr('data-star-scope'),
-        option =  {
-                    half		: true,
-                    path		: '{% static 'images/' %}',
-                    precision	: true,
-                    size		: 24,
-                    starOff		: 'g_star.png',
-                    starOn		: 'r_star.png',
-                    starHalf	: 'h_star.png',
-                    hints       : ['极差', '差', '一般', '好评', '非常满意'],
-                    noRatedMsg  : '暂时还未获得评价！',
-                    readOnly    : true,
-                    score       : score
-                };
-    $precision.raty(option);
-
-    $('.jsFavBtn').on('click', function(){
-        var type = $(this).attr('data-fav-type');
-        if(type == '1'){
-            favPraise($(this), 'fav' ,1 , '收藏');
-
-        }else if(type == '3'){
-            favPraise($(this), 'fav' ,3 );
-
-        }else if(type == '11'){
-            favPraise($(this), 'pra', 1);
-
-        }else if(type == '4'){
-            favPraise($(this), 'fav' ,4 );
-
-        }
+$('#jsLeftBtn').on('click',function(){
+    add_fav($(this),{{ course.id }},1);
     });
-})
+
+$('#jsRightBtn').on('click',function(){
+    add_fav($(this),{{ course.course_org.id }},2);
+    });
+
 </script>
 {% endblock %}
 
