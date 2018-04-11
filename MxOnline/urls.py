@@ -23,11 +23,12 @@ from django.views.static import serve
 
 from users.views import LoginView,RegisterView,ActiveUserView,ForgetpwdView,ResetView,ModifyPwdView
 from organization.views import OrgView
+from operation.views import IndexView
 from MxOnline.settings import MEDIA_ROOT
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
-    url('^$',TemplateView.as_view(template_name="index.html"),name="index"),
+    url('^$',IndexView.as_view(),name="index"),
     url('^login/$',LoginView.as_view(),name="login"),
     url('^register/',RegisterView.as_view(),name="register"),
     url(r'^captcha/', include('captcha.urls')),
