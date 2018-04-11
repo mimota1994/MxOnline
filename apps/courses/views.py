@@ -76,6 +76,7 @@ class CourseDetailView(View):
             'course_id':course_id,
             'course_msg':course_msg,
             'org_msg':org_msg,
-            'related_courses':relate_courses
+            'related_courses':relate_courses,
+            'sa':'course'
         })
 

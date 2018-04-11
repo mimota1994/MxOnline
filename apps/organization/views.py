@@ -236,6 +236,12 @@ class AddFavView(View):
                     org = orgs[0]
                     org.fav_nums = count
                     org.save()
+
+            if fav_type == '3':
+                teacher = Teacher.objects.get(id=fav_id)
+                if teacher:
+                    teacher.fav_nums = count
+                    teacher.save()
             return HttpResponse('{"status":"success","msg":"收藏"}', content_type='application/json')
 
         else:
@@ -262,6 +268,12 @@ class AddFavView(View):
                         org.fav_nums=count
                         org.save()
 
+                if fav_type == '3':
+                    teacher = Teacher.objects.get(id=fav_id)
+                    if teacher:
+                        teacher.fav_nums = count
+                        teacher.save()
+
 
 
                 return HttpResponse('{"status":"success","msg":"已收藏"}', content_type='application/json')
@@ -273,13 +285,14 @@ class AddFavView(View):
 class TeacherView(View):
     def get(self,request):
         all_teachers=Teacher.objects.all()
-        hot_teachers=Teacher.objects.order_by('click_nums')[:3]
+        count=all_teachers.count()
+        hot_teachers=Teacher.objects.order_by('-fav_nums')[:3]
 
         #人气（点击数量）排序
         sort=request.GET.get('sort','')
 
         if sort=='hot':
-            all_teachers.order_by('click_nums')
+            all_teachers=all_teachers.order_by('-click_nums')
 
         #分页
         try:
@@ -294,5 +307,35 @@ class TeacherView(View):
             'all_teachers':teachers,
             'sa':'teacher',
             'hot_teachers':hot_teachers,
-            'sort':sort
+            'sort':sort,
+            'count':count
+        })
+
+class TeacherDetailView(View):
+    def get(self,request,teacher_id):
+        teacher=Teacher.objects.get(id=teacher_id)
+        all_courses=teacher.course_set.all()
+        hot_teachers=Teacher.objects.order_by('-fav_nums')[:3]
+
+        #点击数
+        teacher.click_nums+=1
+        teacher.save()
+
+        teacher_msg='收藏'
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(fav_type=3,fav_id=teacher_id):
+                teacher_msg='已收藏'
+
+        org_msg = '收藏'
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(fav_type=2, fav_id=teacher.org.id):
+                org_msg = '已收藏'
+
+        return render(request,'teacher-detail.html',{
+            'teacher':teacher,
+            'sa': 'teacher',
+            'hot_teachers': hot_teachers,
+            'all_courses':all_courses,
+            'teacher_msg':teacher_msg,
+            'org_msg':org_msg
         })
