@@ -1,6 +1,6 @@
 #_*_encoding:utf-8_*_
 from django.shortcuts import render
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.views.generic.base import View
@@ -40,6 +40,13 @@ class LoginView(View):
                 return render(request,"login.html",{"msg":"用户名或密码错误"})
         else:
             return render(request, "login.html", {"login_form":login_form})
+
+
+class LogOutView(View):
+    def get(self,request):
+        logout(request)
+        return render(request,'index.html')
+
 
 class RegisterView(View):
     def get(self,request):
