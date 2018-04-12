@@ -2,9 +2,11 @@
 from django.shortcuts import render
 from django.views.generic import View
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
+from django.http import HttpResponse
+
 
 from .models import Course
-from operation.models import UserFavorite
+from operation.models import UserFavorite,UserCourse
 
 # Create your views here.
 class CourseView(View):
@@ -52,15 +54,21 @@ class CourseDetailView(View):
         course.click_nums=course.click_nums+1
         course.save()
 
+        #我要学习
+        msg='我要学习'
+        if request.user.is_authenticated():
+            if UserCourse.objects.filter(user=request.user,course=course):
+                msg='正在学习'
+
         #课程机构收藏显示
         org_msg="收藏"
-        if request.user.is_authenticated:
+        if request.user.is_authenticated():
             if UserFavorite.objects.filter(user=request.user, fav_id=course.course_org.id,fav_type=2):
                 org_msg="已收藏"
 
 
         course_msg = "收藏"
-        if request.user.is_authenticated:
+        if request.user.is_authenticated():
             if UserFavorite.objects.filter(user=request.user, fav_id=course.id, fav_type=1):
                 course_msg = "已收藏"
 
@@ -76,7 +84,54 @@ class CourseDetailView(View):
             'course_id':course_id,
             'course_msg':course_msg,
             'org_msg':org_msg,
+            'msg':msg,
             'related_courses':relate_courses,
             'sa':'course'
         })
 
+
+class AddLearnView(View):
+
+    def post(self,request):
+        user_id=request.user.id
+        course_id = request.POST.get('course_id', 0)
+
+        course = Course.objects.get(id=course_id)
+
+        #增加学习课程的数据记录
+        if request.user.is_authenticated():
+            user_course=UserCourse()
+
+            #判断是否存在记录
+            exist_records = UserCourse.objects.filter(user_id=int(user_id), course_id=int(course_id))
+            if not exist_records:
+                user_course.user_id=user_id
+                user_course.course_id=course_id
+                user_course.save()
+                #更新课程学习人数
+                students=UserCourse.objects.filter(course_id=int(course_id)).count()
+                course.students=students
+                course.save()
+
+                return HttpResponse('{"status":"transfer","msg":"正在学习"}', content_type='application/json')
+            else:
+                exist_records.delete()
+
+                # 更新课程学习人数
+                students = UserCourse.objects.filter(course_id=int(course_id)).count()
+                course.students = students
+                course.save()
+
+                return HttpResponse('{"status":"concel","msg":"我要学习"}', content_type='application/json')
+
+
+        else:
+            return HttpResponse('{"status":"fail","msg":"用户未登录"}', content_type='application/json')
+
+class CourseVideoView(View):
+    def get(self,request,course_id):
+        course = Course.objects.get(id=course_id)
+        return render(request,'course-video.html',{
+            'course':course,
+            'sa':'course'
+        })

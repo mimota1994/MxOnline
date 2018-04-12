@@ -19,3 +19,5 @@ class IndexView(View):
             'all_orgs':all_orgs,
             'banner_courses':banner_courses
         })
+
+

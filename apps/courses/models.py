@@ -43,6 +43,9 @@ class Lesson(models.Model):
         verbose_name=u"章节"
         verbose_name_plural=verbose_name
 
+    def __unicode__(self):
+        return self.name
+
 
 class Video(models.Model):
     lesson=models.ForeignKey(Lesson,verbose_name=u"章节")

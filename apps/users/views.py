@@ -7,7 +7,7 @@ from django.views.generic.base import View
 from django.contrib.auth.hashers import make_password
 
 from .models import UserProfile,EmailVerifyRecord
-from .forms import LoginForm,RegisterForm,ForgetpwdForm,ModeifyPwdForm
+from .forms import LoginForm,RegisterForm,ForgetpwdForm,ModeifyPwdForm,UserModeifyForm,UserImageForm
 from utils.email_send import send_register_email
 
 
@@ -134,6 +134,54 @@ class ModifyPwdView(View):
             email=request.POST.get("email","")
             return render(request,"password_reset.html",{"email":email,"modify_form":modify_form})
 
+
+#个人主页
+class UserCenterInfoView(View):
+    def get(self, request):
+        if request.user.is_authenticated():
+            return render(request, 'usercenter-info.html', {
+
+            })
+
+    def post(self,request):
+        user_modeify_form=UserModeifyForm(request.POST)
+        if user_modeify_form.is_valid():
+            nick_name = request.POST.get("nick_name", "")
+            gender = request.POST.get("gender", "")
+            address = request.POST.get("address", "")
+            birthday = request.POST.get("birthday", "")
+            mobile = request.POST.get("mobile", "")
+            email = request.POST.get("email", "")
+
+            if request.user.is_authenticated():
+                user=request.user
+                user.nick_name=nick_name
+                user.gender = gender
+                user.address = address
+                user.birthday = birthday
+                user.mobile =mobile
+                user.email = email
+                user.save
+
+        user_image_form=UserImageForm(request.POST)
+        if user_image_form.is_valid():
+            image=request.POST.get('image','')
+
+
+            return render(request,'usercenter-info.html',{
+
+            })
+
+            #     if user is not None:
+            #         if user.is_active:
+            #             login(request, user)
+            #             return render(request, "index.html", {"user_name": user_name})
+            #         else:
+            #             return render(request, "login.html", {"msg": "用户未激活"})
+            #     else:
+            #         return render(request, "login.html", {"msg": "用户名或密码错误"})
+            # else:
+            #     return render(request, "login.html", {"login_form": login_form})
 # Create your views here.
 
 

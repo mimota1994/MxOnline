@@ -26,19 +26,19 @@
 
                         <div class="personal">
                             <dl class="user fr">
-                                <dd>{{ user_name }}<img class="down fr" src="/static/images/top_down.png"/></dd>
-                                <dt><img width="20" height="20" src="/static/media/image/2016/12/default_big_14.png"/></dt>
+                                <dd>{{ request.user.username }}<img class="down fr" src="/static/images/top_down.png"/></dd>
+                                <dt><img width="20" height="20" src="{{ MEDIA_URL }}{{ request.user.image }}"/></dt>
                             </dl>
                             <div class="userdetail">
                             	<dl>
-	                                <dt><img width="80" height="80" src="/static/media/image/2016/12/default_big_14.png"/></dt>
+	                                <dt><img width="80" height="80" src="{{ MEDIA_URL }}{{ request.user.image }}"/></dt>
 	                                <dd>
-	                                    <h2>django</h2>
-	                                    <p>bobby</p>
+	                                    <h2>用户</h2>
+	                                    <p>{{ request.user.username }}</p>
 	                                </dd>
                                 </dl>
                                 <div class="btn">
-	                                <a class="personcenter fl" href="usercenter-info.html">进入个人中心</a>
+	                                <a class="personcenter fl" href="{% url 'user:info' %}">进入个人中心</a>
 	                                <a class="fr" href="{% url 'logout' %}">退出</a>
                                 </div>
                             </div>
@@ -192,7 +192,7 @@
 					<div class="module1_1 left">
 						<img width="228" height="614" src="/static/images/module1_1.jpg"/>
 						<p class="fisrt_word">名师授课<br/>专业权威</p>
-						<a class="more" href="course-list.html">查看更多课程 ></a>
+						<a class="more" href="{% url 'course:course_list' %}">查看更多课程 ></a>
 					</div>
 					<div class="right group_list">
 						<div class="module1_2 box">
@@ -243,7 +243,7 @@
 					<div class="module3_1 left">
 						<img width="228" height="463" src="/static/images/module3_1.jpg"/>
 						<p class="fisrt_word">名校来袭<br/>权威认证</p>
-						<a class="more" href="org-list.html">查看更多机构 ></a>
+						<a class="more" href="{% url 'org:org_list' %}">查看更多机构 ></a>
 					</div>
 					<div class="right">
 						<ul>

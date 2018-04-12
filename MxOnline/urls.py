@@ -47,6 +47,9 @@ urlpatterns = [
     #配置上传文件的访问处理函数
     url(r'^media/(?P<path>.*)/$',serve,{"document_root":MEDIA_ROOT}),
 
+    #个人相关
+    url(r'user/',include('users.urls',namespace='user'))
+
     #机构详情列表
     #url(r'^org/$',OrgDetailHomePageView.as_view(),name="org-detail-homepage")
 

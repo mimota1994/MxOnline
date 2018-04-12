@@ -45,7 +45,11 @@
 							<div class="btn colectgroupbtn"  id="jsLeftBtn">
                                   {{ course_msg }}
                             </div>
-                                <div class="buy btn"><a style="color: white" href="course-video.html">开始学习</a></div>
+
+                                <div class="btn colectgroupbtn"  id="jsxueBtn">
+                                  {{ msg }}
+                                </div>
+
 						</div>
 					</div>
                     <div class="group-share-box">
@@ -183,5 +187,45 @@ $('#jsRightBtn').on('click',function(){
     });
 
 </script>
+    <script type="text/javascript">
+    //收藏分享
+//收藏分享
+function del_course(current_elem, course_id){
+    $.ajax({
+        cache: false,
+        type: "POST",
+        url:"{% url 'course:addlearn' %}",
+        data:{'course_id':course_id},
+        async: true,
+        beforeSend:function(xhr, settings){
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        },
+        success: function(data) {
+            if(data.status == 'fail'){
+                if(data.msg == '用户未登录'){
+                    window.location.href="/login/";
+                }else{
+                    alert(data.msg)
+                }
+
+            }else if(data.status == 'concel'){
+                current_elem.text(data.msg)
+            }
+            else if(data.status == 'transfer'){
+
+                window.location.href="{% url 'course:video' course_id %}";
+                current_elem.text(data.msg)
+            }
+        },
+    });
+}
+
+$('#jsxueBtn').on('click',function(){
+    del_course($(this),{{ course_id }});
+    });
+
+
+</script>
+
 {% endblock %}
 
