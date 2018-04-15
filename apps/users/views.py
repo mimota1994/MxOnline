@@ -5,10 +5,14 @@ from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.views.generic.base import View
 from django.contrib.auth.hashers import make_password
+from pure_pagination import Paginator,PageNotAnInteger
 
 from .models import UserProfile,EmailVerifyRecord
 from .forms import LoginForm,RegisterForm,ForgetpwdForm,ModeifyPwdForm,UserModeifyForm,UserImageForm
 from utils.email_send import send_register_email
+from operation.models import UserFavorite,UserMessage
+from courses.models import Course
+from organization.models import Teacher,CourseOrg
 
 
 class CustomBackend(ModelBackend):
@@ -140,11 +144,18 @@ class UserCenterInfoView(View):
     def get(self, request):
         if request.user.is_authenticated():
             return render(request, 'usercenter-info.html', {
+                'four_in_one': 'info'
 
             })
 
     def post(self,request):
         user_modeify_form=UserModeifyForm(request.POST)
+        nick_name = request.POST.get("nick_name", "")
+        gender = request.POST.get("gender", "")
+        address = request.POST.get("address", "")
+        birthday = request.POST.get("birthday", "")
+        mobile = request.POST.get("mobile", "")
+        email = request.POST.get("email", "")
         if user_modeify_form.is_valid():
             nick_name = request.POST.get("nick_name", "")
             gender = request.POST.get("gender", "")
@@ -154,34 +165,121 @@ class UserCenterInfoView(View):
             email = request.POST.get("email", "")
 
             if request.user.is_authenticated():
-                user=request.user
+                user=UserProfile.objects.get(id=request.user.id)
                 user.nick_name=nick_name
                 user.gender = gender
                 user.address = address
                 user.birthday = birthday
                 user.mobile =mobile
                 user.email = email
-                user.save
-
-        user_image_form=UserImageForm(request.POST)
-        if user_image_form.is_valid():
-            image=request.POST.get('image','')
+                user.save()
 
 
-            return render(request,'usercenter-info.html',{
+                return render(request, 'usercenter-info.html', {
 
+
+                })
+
+
+
+class MyCourseView(View):
+    def get(self,request):
+        if request.user.is_authenticated():
+            all_courses_id=request.user.usercourse_set.all()
+            all_courses=[]
+            for id in all_courses_id:
+                all_courses.append(id.course)
+
+            return render(request,'usercenter-mycourse.html',{
+                'all_courses':all_courses,
+                'four_in_one': 'course'
             })
 
-            #     if user is not None:
-            #         if user.is_active:
-            #             login(request, user)
-            #             return render(request, "index.html", {"user_name": user_name})
-            #         else:
-            #             return render(request, "login.html", {"msg": "用户未激活"})
-            #     else:
-            #         return render(request, "login.html", {"msg": "用户名或密码错误"})
-            # else:
-            #     return render(request, "login.html", {"login_form": login_form})
-# Create your views here.
 
+class MyFavCourseView(View):
+    def get(self,request):
+        if request.user.is_authenticated():
+            user_id=request.user.id
+            all_fav_id=UserFavorite.objects.filter(user_id=user_id,fav_type=1)
+            all_courses=[]
+            for id in all_fav_id:
+                all_courses.append(Course.objects.get(id=id.fav_id))
+
+
+            return render(request,'usercenter-fav-course.html',{
+                'all_courses':all_courses,
+                'four_in_one': 'fav'
+            })
+
+
+class MyFavOrgView(View):
+    def get(self,request):
+        if request.user.is_authenticated():
+            user_id=request.user.id
+            all_fav_id=UserFavorite.objects.filter(user_id=user_id,fav_type=2)
+            all_orgs=[]
+            for id in all_fav_id:
+                all_orgs.append(CourseOrg.objects.get(id=id.fav_id))
+
+            return render(request,'usercenter-fav-org.html',{
+                "all_orgs":all_orgs,
+                'four_in_one':'fav'
+            })
+
+
+class MyFavTeacherView(View):
+    def get(self,request):
+        if request.user.is_authenticated():
+            user_id = request.user.id
+            all_fav_id = UserFavorite.objects.filter(user_id=user_id, fav_type=3)
+            all_teachers = []
+
+            for id in all_fav_id:
+                all_teachers.append(Teacher.objects.get(id=id.fav_id))
+
+            return render(request,'usercenter-fav-teacher.html',{
+                'all_teachers':all_teachers,
+                'four_in_one': 'fav'
+            })
+
+class MyMessageView(View):
+    def get(self,request):
+        if request.user.is_authenticated():
+            user_id = request.user.id
+            all_messages=UserMessage.objects.filter(user=user_id).order_by('-add_time')
+
+
+            #分页
+            try:
+                page=request.GET.get('page',1)
+            except PageNotAnInteger:
+                page=1
+
+            p=Paginator(all_messages,8,request=request)
+
+            message=p.page(page)
+
+            for mes in message.object_list:
+                mes.has_read=True
+                mes.save()
+
+            not_read_nums = UserMessage.objects.filter(user=user_id, has_read=False).count()
+
+        return render(request,'usercenter-message.html',{
+            'four_in_one':'message',
+            'all_messages':message,
+            'not_read_nums':not_read_nums
+        })
+
+
+class ImageUploadView(View):
+    def post(self,request):
+        image_form=UserImageForm(request.POST,request.FILES)
+        if image_form.is_valid():
+            image=image_form.files['image']
+            request.user.image=image
+            request.user.save()
+            return render(request, 'usercenter-info.html', {
+
+            })
 

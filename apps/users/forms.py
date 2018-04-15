@@ -32,7 +32,7 @@ class ModeifyPwdForm(forms.Form):
 class UserModeifyForm(forms.ModelForm):
     class Meta:
         model=UserProfile
-        fields=['nick_name','birthday','gender','address','mobile','email']
+        fields=['nick_name','gender','address','mobile','email']
 
     def clean_mobile(self):
         mobile = self.cleaned_data['mobile']
@@ -44,8 +44,10 @@ class UserModeifyForm(forms.ModelForm):
             raise forms.ValidationError(u"手机号码非法", code="mobile_invalide")
 
 
-class UserImageForm(forms.Form):
-    image=forms.ImageField(required=True)
+class UserImageForm(forms.ModelForm):
+    class Meta:
+        model=UserProfile
+        fields=['image']
 
 
 class EmailModeifyForm(forms.Form):

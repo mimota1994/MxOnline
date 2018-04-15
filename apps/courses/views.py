@@ -3,15 +3,23 @@ from django.shortcuts import render
 from django.views.generic import View
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
+from django.db.models import Q
 
 
-from .models import Course
-from operation.models import UserFavorite,UserCourse
+from .models import Course,Video
+from operation.models import UserFavorite,UserCourse,CourseComments
 
 # Create your views here.
 class CourseView(View):
     def get(self,request):
         all_courses=Course.objects.all().order_by("add_time")
+
+        #课程搜索
+        search_keywords=request.GET.get('keywords', "")
+        if search_keywords:
+            #i 不区分大小写
+            all_courses=all_courses.filter(Q(name__icontains=search_keywords)|Q(des__icontains=search_keywords)|Q(detail__icontains=search_keywords))
+
         sort = request.GET.get('sort', "")
         if sort:
             if sort == "hot":
@@ -128,10 +136,52 @@ class AddLearnView(View):
         else:
             return HttpResponse('{"status":"fail","msg":"用户未登录"}', content_type='application/json')
 
+
 class CourseVideoView(View):
     def get(self,request,course_id):
         course = Course.objects.get(id=course_id)
         return render(request,'course-video.html',{
             'course':course,
+            'comment_or_video': "video",
             'sa':'course'
         })
+
+
+class CourseCommentView(View):
+    def get(self,request,course_id):
+        course=Course.objects.get(id=course_id)
+        all_comments=course.coursecomments_set.all()
+        return render(request,'course-comment.html',{
+            'course':course,
+            'comment_or_video':"comment",
+            'sa':'course',
+            'all_comments':all_comments
+        })
+
+
+class AddCommentView(View):
+    def post(self,request):
+        course_id=request.POST.get('course_id',"0")
+        comments=request.POST.get('comments',"")
+
+        if request.user.is_authenticated():
+            course_comments=CourseComments()
+            course_comments.course_id=course_id
+            course_comments.user_id=request.user.id
+            course_comments.comments=comments
+            course_comments.save()
+            return HttpResponse('{"status":"success","msg":"评论成功"}', content_type='application/json')
+
+        else:
+            return HttpResponse('{"status":"success","msg":"用户未登陆"}', content_type='application/json')
+
+
+class VideoView(View):
+    def get(self,request,video_id):
+        if request.user.is_authenticated():
+            video=Video.objects.get(id=video_id)
+            course=video.lesson.course
+            if UserCourse.objects.filter(user=request.user,course=course):
+                return render(request,'video_things.html',{
+                    'video_url':video.video_url
+                })

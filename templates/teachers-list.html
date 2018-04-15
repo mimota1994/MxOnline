@@ -52,7 +52,7 @@
 							<li>工作职位：<span>{{ teacher.work_position }}</span></li>
 							<li>就职公司：<span>{{ teacher.work_company }}&nbsp;</span></li>
 							<li>年龄：<span>岁</span></li>
-							<li>教学特点：<span>xxx</span></li>
+							<li>教学特点：<span>{{ teacher.points }}</span></li>
 						</ul>
 					</dd>
                     <a class="buy buyservice" href="{% url 'org:teacher_detail' teacher.id %}"><br/>查看<br/>详情</a>

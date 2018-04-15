@@ -15,7 +15,7 @@ urlpatterns=[
     #机构收藏
     url(r'^add_fav/$', AddFavView.as_view(), name="add_fav"),
 
-    url(r'^teacher/$',TeacherView.as_view(),name="teachers"),
+    url(r'^teacher/list/$',TeacherView.as_view(),name="teachers"),
     url(r'^teacher/detail/(?P<teacher_id>\d+)/$',TeacherDetailView.as_view(),name='teacher_detail')
 
 ]

@@ -16,7 +16,7 @@ class UserProfile(AbstractUser):
     address=models.CharField(max_length=100,verbose_name=u"地址",default="")
     #email=models.EmailField(max_length=30)
     gender=models.CharField(choices=(("male",u"男"),("female",u"女")),default="female",max_length=10)
-    mobile=models.PositiveIntegerField(max_length=11,null=True,blank=True)
+    mobile=models.CharField(max_length=11,null=True,blank=True)
     image=models.ImageField(upload_to="image/%Y/%m", default=u"image/default.png",max_length=100)
 
     class Meta:
@@ -50,3 +50,8 @@ class Banner(models.Model):
         verbose_name=u"轮播图"
         verbose_name_plural=verbose_name
 
+
+class Test(models.Model):
+
+    index = models.IntegerField(default=5, verbose_name=u"顺序")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name=u"添加时间")

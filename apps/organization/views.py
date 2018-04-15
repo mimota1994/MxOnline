@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views.generic.base import View
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
+from django.db.models import Q
 
 from .models import CourseOrg, CityDict,Teacher
 from .forms import UserAskForm
@@ -17,6 +18,11 @@ class OrgView(View):
         # 课程机构
         all_orgs = CourseOrg.objects.all()
         hot_orgs = all_orgs.order_by("click_nums")[:3]
+
+        #搜索
+        search_keywords=request.GET.get('keywords',"")
+        all_orgs=all_orgs.filter(Q(name__icontains=search_keywords)|Q(desc__contains=search_keywords)|Q(address__icontains=search_keywords))
+
         # 城市
         all_citys = CityDict.objects.all()
 
@@ -285,8 +291,12 @@ class AddFavView(View):
 class TeacherView(View):
     def get(self,request):
         all_teachers=Teacher.objects.all()
-        count=all_teachers.count()
+
         hot_teachers=Teacher.objects.order_by('-fav_nums')[:3]
+
+        #搜索
+        search_keywords=request.GET.get('keywords','')
+        all_teachers=all_teachers.filter(Q(name__icontains=search_keywords)|Q(work_company__icontains=search_keywords)|Q(points__icontains=search_keywords))
 
         #人气（点击数量）排序
         sort=request.GET.get('sort','')
@@ -302,6 +312,7 @@ class TeacherView(View):
 
         p=Paginator(all_teachers,4,request=request)
         teachers=p.page(page)
+        count = all_teachers.count()
 
         return render(request,'teachers-list.html',{
             'all_teachers':teachers,
